@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  localstack:
+    container_name: localstack
+    image: localstack/localstack
+    ports:
+      - 4566:4566
+    environment:
+      - SERVICES=sqs, dynamodb
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - localstack_volume:/var/lib/localstack
+      - ./init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh
+
+volumes:
+  localstack_volume:
