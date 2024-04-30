@@ -19,7 +19,7 @@ func NewUserGatewayAPI() ports.UserGateway {
 }
 
 func (u *UserGatewayAPI) GetUser(userID string) (map[string]any, error) {
-	var url = fmt.Sprintf("http://localhost:8080/users/%s", userID)
+	var url = fmt.Sprintf("http://user_api:8080/users/%s", userID)
 	var output map[string]any
 	response, err := u.httpClient.
 		R().

@@ -21,7 +21,7 @@ func NewSQS() ports.Queue {
 		log.Fatal("error to load default config")
 	}
 	client := sqs.NewFromConfig(cfg, func(o *sqs.Options) {
-		o.BaseEndpoint = aws.String("http://localhost:4566")
+		o.BaseEndpoint = aws.String("http://localstack:4566")
 	})
 	return &SQS{
 		client,

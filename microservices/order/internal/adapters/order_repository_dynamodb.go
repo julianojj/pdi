@@ -23,7 +23,7 @@ func NewOrderRepositoryDynamoDB() ports.OrderRepository {
 		log.Fatal("error to load default config")
 	}
 	client := dynamodb.NewFromConfig(cfg, func(o *dynamodb.Options) {
-		o.BaseEndpoint = aws.String("http://localhost:4566")
+		o.BaseEndpoint = aws.String("http://localstack:4566")
 	})
 	return &OrderRepositoryDynamoDB{
 		client,
