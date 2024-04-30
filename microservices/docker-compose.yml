@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   localstack:
     container_name: localstack
@@ -7,11 +5,32 @@ services:
     ports:
       - 4566:4566
     environment:
-      - SERVICES=sqs, dynamodb
+      - SERVICES=sqs,dynamodb
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - localstack_volume:/var/lib/localstack
       - ./init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh
+
+  user_api:
+    container_name: user_api
+    build:
+      context: ./user
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
+  order_api:
+    container_name: order_api
+    build:
+      context: ./order
+      dockerfile: Dockerfile
+    environment:
+      - AWS_ACCESS_KEY_ID=key_id
+      - AWS_SECRET_ACCESS_KEY=secret
+    ports:
+      - "8081:8081"
+    depends_on:
+      - localstack
 
 volumes:
   localstack_volume:
