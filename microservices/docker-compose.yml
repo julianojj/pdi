@@ -31,6 +31,16 @@ services:
       - "8081:8081"
     depends_on:
       - localstack
+  payment_api:
+    container_name: payment_api
+    build:
+      context: ./payment
+      dockerfile: Dockerfile
+    environment:
+      - AWS_ACCESS_KEY_ID=key_id
+      - AWS_SECRET_ACCESS_KEY=secret
+    depends_on:
+      - localstack
 
 volumes:
   localstack_volume:
