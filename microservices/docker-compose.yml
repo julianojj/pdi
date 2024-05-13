@@ -31,8 +31,19 @@ services:
       - "8081:8081"
     depends_on:
       - localstack
-  payment_api:
-    container_name: payment_api
+  order_work:
+    container_name: order_work
+    build:
+      context: ./order
+      dockerfile: Dockerfile
+    command: '/usr/local/bin/worker'
+    environment:
+      - AWS_ACCESS_KEY_ID=key_id
+      - AWS_SECRET_ACCESS_KEY=secret
+    depends_on:
+      - localstack
+  payment_work:
+    container_name: payment_work
     build:
       context: ./payment
       dockerfile: Dockerfile
