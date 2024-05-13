@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -50,6 +51,10 @@ func (os *OrderService) MakeOrder(input *OrderServiceInput) (map[string]any, err
 	}
 	if input.PaymentToken == "" {
 		return nil, errors.New("payment token is required")
+	}
+	_, err := base64.StdEncoding.DecodeString(input.PaymentToken)
+	if err != nil {
+		return nil, errors.New("invalid payment token")
 	}
 	existingUser, err := os.userGateway.GetUser(input.UserID)
 	if err != nil {
