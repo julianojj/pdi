@@ -42,6 +42,7 @@ services:
       - AWS_SECRET_ACCESS_KEY=secret
     depends_on:
       - localstack
+    restart: always
   payment_work:
     container_name: payment_work
     build:
@@ -52,6 +53,18 @@ services:
       - AWS_SECRET_ACCESS_KEY=secret
     depends_on:
       - localstack
+    restart: always
+  notification_work:
+    container_name: notification_work
+    build:
+      context: ./notification
+      dockerfile: Dockerfile
+    environment:
+      - AWS_ACCESS_KEY_ID=key_id
+      - AWS_SECRET_ACCESS_KEY=secret
+    depends_on:
+      - localstack
+    restart: always
 
 volumes:
   localstack_volume:
