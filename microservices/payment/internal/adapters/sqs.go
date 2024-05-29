@@ -48,9 +48,9 @@ func (s *SQS) Consume(queueName string, callback func(args []byte) error) error 
 	}
 }
 
-func (s *SQS) Publish(message string) error {
+func (s *SQS) Publish(queueURL, message string) error {
 	input := &sqs.SendMessageInput{
-		QueueUrl:    aws.String("https://localhost.localstack.cloud:4566/000000000000/confirmed-payment"),
+		QueueUrl:    aws.String(queueURL),
 		MessageBody: aws.String(message),
 	}
 	_, err := s.client.SendMessage(context.TODO(), input)
