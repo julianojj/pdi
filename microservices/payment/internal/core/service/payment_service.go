@@ -86,7 +86,19 @@ func (p *PaymentService) ProcessPayment(input *PaymentServiceInput) error {
 	if err != nil {
 		return err
 	}
-	if err := p.queue.Publish(string(b)); err != nil {
+	if err := p.queue.Publish("https://localhost.localstack.cloud:4566/000000000000/confirmed-payment", string(b)); err != nil {
+		return err
+	}
+	b, err = json.Marshal(map[string]any{
+		"order_id":       payment.OrderID,
+		"payment_id":     payment.ID,
+		"payment_status": payment.Status,
+		"customer":       input.Customer,
+	})
+	if err != nil {
+		return err
+	}
+	if err := p.queue.Publish("https://localhost.localstack.cloud:4566/000000000000/notification", string(b)); err != nil {
 		return err
 	}
 	p.logger.Info(
