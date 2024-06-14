@@ -3,10 +3,10 @@ package service
 import (
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log/slog"
 	"pdi/order/internal/core/domain"
+	"pdi/order/internal/core/exceptions"
 	"pdi/order/internal/ports"
 )
 
@@ -47,14 +47,14 @@ func NewOrderService(
 
 func (os *OrderService) MakeOrder(input *OrderServiceInput) (map[string]any, error) {
 	if input.UserID == "" {
-		return nil, errors.New("user id is required")
+		return nil, exceptions.ErrUserIDIsRequired
 	}
 	if input.PaymentToken == "" {
-		return nil, errors.New("payment token is required")
+		return nil, exceptions.ErrPaymentTokenIsRequired
 	}
 	_, err := base64.StdEncoding.DecodeString(input.PaymentToken)
 	if err != nil {
-		return nil, errors.New("invalid payment token")
+		return nil, exceptions.ErrInvalidPaymentToken
 	}
 	existingUser, err := os.userGateway.GetUser(input.UserID)
 	if err != nil {
@@ -67,7 +67,7 @@ func (os *OrderService) MakeOrder(input *OrderServiceInput) (map[string]any, err
 			return nil, err
 		}
 		if existingItem == nil {
-			return nil, errors.New("item not found")
+			return nil, exceptions.ErrItemNotFound
 		}
 		order.AddItem(existingItem, inputItem.Quantity)
 	}
@@ -148,7 +148,7 @@ func (os *OrderService) GetOrder(orderID string) (map[string]any, error) {
 		return nil, err
 	}
 	if order == nil {
-		return nil, errors.New("order not found")
+		return nil, exceptions.ErrOrderNotFound
 	}
 	output := map[string]any{
 		"order_id":    orderID,
