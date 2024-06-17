@@ -55,7 +55,7 @@ func main() {
 	r.GET("/orders/:id", func(ctx *gin.Context) {
 		output, err := orderService.GetOrder(ctx.Param("id"))
 		if err != nil {
-			ctx.AbortWithStatusJSON(http.StatusNotFound, map[string]any{
+			ctx.AbortWithStatusJSON(http.StatusFailedDependency, map[string]any{
 				"message": err.Error(),
 			})
 			return
