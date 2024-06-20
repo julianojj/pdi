@@ -19,7 +19,8 @@ func main() {
 		}),
 	)
 	sqs := adapters.NewSQS()
-	notificationService := service.NewNotificationService(logger)
+	notificationRepository := adapters.NewNotificationMongoBD()
+	notificationService := service.NewNotificationService(logger, notificationRepository)
 	Worker(sqs, notificationService, logger)
 	forever := make(chan bool)
 	<-forever
