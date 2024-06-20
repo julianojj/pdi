@@ -8,13 +8,14 @@ import (
 	"pdi/payment/internal/ports"
 
 	lSdk "github.com/julianojj/essentials-sdk-go/pkg/logger"
+	qSdk "github.com/julianojj/essentials-sdk-go/pkg/queue"
 )
 
 type (
 	PaymentService struct {
 		paymentGateway    ports.PaymentGateway
 		paymentRepository ports.PaymentRepository
-		queue             ports.Queue
+		queue             qSdk.Queue
 		logger            lSdk.Logger
 	}
 	PaymentServiceInput struct {
@@ -36,7 +37,7 @@ type (
 func NewPaymentService(
 	paymentGateway ports.PaymentGateway,
 	paymentRepository ports.PaymentRepository,
-	queue ports.Queue,
+	queue qSdk.Queue,
 	logger lSdk.Logger,
 ) *PaymentService {
 	return &PaymentService{

@@ -7,13 +7,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	lSdk "github.com/julianojj/essentials-sdk-go/pkg/logger"
+	qSdk "github.com/julianojj/essentials-sdk-go/pkg/queue"
 )
 
 func main() {
 	orderRepository := adapters.NewOrderRepositoryDynamoDB()
 	itemRepository := adapters.NewItemRepositoryMemory()
 	userGateway := adapters.NewUserGatewayAPI()
-	queue := adapters.NewSQS()
+	queue := qSdk.NewSQS("http://localstack:4566", "us-east-1")
 
 	logger := lSdk.NewSlog()
 
