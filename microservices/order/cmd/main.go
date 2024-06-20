@@ -1,13 +1,12 @@
 package main
 
 import (
-	"log/slog"
 	"net/http"
-	"os"
 	"pdi/order/internal/adapters"
 	"pdi/order/internal/core/service"
 
 	"github.com/gin-gonic/gin"
+	lSdk "github.com/julianojj/essentials-sdk-go/pkg/logger"
 )
 
 func main() {
@@ -16,13 +15,7 @@ func main() {
 	userGateway := adapters.NewUserGatewayAPI()
 	queue := adapters.NewSQS()
 
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil)).With(
-		slog.Any("application", map[string]any{
-			"name":        "order-ms",
-			"environment": "dev",
-			"version":     "1.0.0",
-		}),
-	)
+	logger := lSdk.NewSlog()
 
 	orderService := service.NewOrderService(orderRepository, itemRepository, queue, userGateway, logger)
 
@@ -38,12 +31,7 @@ func main() {
 		}
 		output, err := orderService.MakeOrder(input)
 		if err != nil {
-			logger.Error(
-				"error to make order",
-				slog.Any("data", map[string]any{
-					"err": err,
-				}),
-			)
+			logger.Error("error to make order", err)
 			ctx.JSON(http.StatusUnprocessableEntity, map[string]any{
 				"message": err.Error(),
 			})

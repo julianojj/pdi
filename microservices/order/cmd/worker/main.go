@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"log/slog"
-	"os"
 	"pdi/order/internal/adapters"
 	"pdi/order/internal/core/service"
 	"pdi/order/internal/ports"
+
+	lSdk "github.com/julianojj/essentials-sdk-go/pkg/logger"
 )
 
 func main() {
@@ -14,13 +14,7 @@ func main() {
 	itemRepository := adapters.NewItemRepositoryMemory()
 	sqs := adapters.NewSQS()
 	userGateway := adapters.NewUserGatewayAPI()
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil)).With(
-		slog.Any("application", map[string]any{
-			"name":        "order-ms",
-			"environment": "dev",
-			"version":     "1.0.0",
-		}),
-	)
+	logger := lSdk.NewSlog()
 
 	orderService := service.NewOrderService(orderRepository, itemRepository, sqs, userGateway, logger)
 
@@ -32,7 +26,7 @@ func main() {
 func Worker(
 	queue ports.Queue,
 	orderService *service.OrderService,
-	logger *slog.Logger,
+	logger lSdk.Logger,
 ) {
 	jobs := []struct {
 		name string
@@ -48,12 +42,7 @@ func Worker(
 					return err
 				}
 				if err := orderService.UpdateStatusOrder(input); err != nil {
-					logger.Error(
-						"error to confirm order",
-						slog.Any("data", map[string]any{
-							"err": err,
-						}),
-					)
+					logger.Error("error to confirm order", err)
 					return err
 				}
 				return nil

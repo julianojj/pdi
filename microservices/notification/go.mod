@@ -1,11 +1,12 @@
 module github.com/julianojj/pdi/notification
 
-go 1.22.3
+go 1.22.4
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.27.0
 	github.com/aws/aws-sdk-go-v2/config v1.27.16
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.32.3
+	github.com/julianojj/essentials-sdk-go v0.0.0-20240620205402-652aecaf3ee3
 	go.mongodb.org/mongo-driver v1.15.1
 )
 

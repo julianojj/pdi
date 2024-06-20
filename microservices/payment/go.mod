@@ -1,6 +1,6 @@
 module pdi/payment
 
-go 1.22.0
+go 1.22.4
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.26.0
@@ -9,6 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.30.5
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.31.3
 	github.com/google/uuid v1.6.0
+	github.com/julianojj/essentials-sdk-go v0.0.0-20240620205402-652aecaf3ee3
 )
 
 require (

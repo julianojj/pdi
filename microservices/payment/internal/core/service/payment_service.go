@@ -4,9 +4,10 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"pdi/payment/internal/core/domain"
 	"pdi/payment/internal/ports"
+
+	lSdk "github.com/julianojj/essentials-sdk-go/pkg/logger"
 )
 
 type (
@@ -14,7 +15,7 @@ type (
 		paymentGateway    ports.PaymentGateway
 		paymentRepository ports.PaymentRepository
 		queue             ports.Queue
-		logger            *slog.Logger
+		logger            lSdk.Logger
 	}
 	PaymentServiceInput struct {
 		Customer PaymentServiceCustomerInput `json:"customer"`
@@ -36,7 +37,7 @@ func NewPaymentService(
 	paymentGateway ports.PaymentGateway,
 	paymentRepository ports.PaymentRepository,
 	queue ports.Queue,
-	logger *slog.Logger,
+	logger lSdk.Logger,
 ) *PaymentService {
 	return &PaymentService{
 		paymentGateway,
@@ -103,15 +104,14 @@ func (p *PaymentService) ProcessPayment(input *PaymentServiceInput) error {
 	}
 	p.logger.Info(
 		"process payment",
-		slog.Any("data", map[string]any{
+		map[string]any{
 			"payment_id":     payment.ID,
 			"order_id":       payment.OrderID,
 			"customer_id":    payment.CustomerID,
 			"payment_status": payment.Status,
 			"payment_code":   paymentGatewayOutput["code"],
 			"total":          payment.Amount,
-		}),
-		slog.String("path", "service.payment_service.ProcessPayment"),
+		},
 	)
 	return nil
 }
