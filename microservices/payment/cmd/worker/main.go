@@ -2,11 +2,11 @@ package main
 
 import (
 	"encoding/json"
-	"log/slog"
-	"os"
 	"pdi/payment/internal/adapters"
 	"pdi/payment/internal/core/service"
 	"pdi/payment/internal/ports"
+
+	lSdk "github.com/julianojj/essentials-sdk-go/pkg/logger"
 )
 
 func main() {
@@ -14,13 +14,7 @@ func main() {
 	paymentGateway := adapters.NewPagarme()
 	paymentRepository := adapters.NewPaymentRepositoryDynamoDB()
 
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil)).With(
-		slog.Any("application", map[string]any{
-			"name":        "payment-ms",
-			"environment": "dev",
-			"version":     "1.0.0",
-		}),
-	)
+	logger := lSdk.NewSlog()
 
 	paymentService := service.NewPaymentService(paymentGateway, paymentRepository, sqs, logger)
 	Worker(sqs, paymentService, logger)
@@ -31,7 +25,7 @@ func main() {
 func Worker(
 	queue ports.Queue,
 	paymentService *service.PaymentService,
-	logger *slog.Logger,
+	logger lSdk.Logger,
 ) {
 	jobs := []struct {
 		name string
@@ -47,12 +41,7 @@ func Worker(
 					return err
 				}
 				if err := paymentService.ProcessPayment(input); err != nil {
-					logger.Error(
-						"error to process payment",
-						slog.Any("data", map[string]any{
-							"err": err,
-						}),
-					)
+					logger.Error("error to process payment", err)
 					return err
 				}
 				return nil

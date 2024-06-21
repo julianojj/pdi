@@ -1,6 +1,6 @@
 module pdi/order
 
-go 1.22.0
+go 1.22.4
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.26.0
@@ -11,6 +11,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-resty/resty/v2 v2.12.0
 	github.com/google/uuid v1.6.0
+	github.com/julianojj/essentials-sdk-go v0.0.0-20240620205402-652aecaf3ee3
 	github.com/stretchr/testify v1.9.0
 )
 

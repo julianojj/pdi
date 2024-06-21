@@ -2,22 +2,15 @@ package main
 
 import (
 	"encoding/json"
-	"log/slog"
-	"os"
 
+	lSdk "github.com/julianojj/essentials-sdk-go/pkg/logger"
 	"github.com/julianojj/pdi/notification/internal/adapters"
 	"github.com/julianojj/pdi/notification/internal/core/service"
 	"github.com/julianojj/pdi/notification/internal/ports"
 )
 
 func main() {
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil)).With(
-		slog.Any("application", map[string]any{
-			"name":        "order-ms",
-			"environment": "dev",
-			"version":     "1.0.0",
-		}),
-	)
+	logger := lSdk.NewSlog()
 	sqs := adapters.NewSQS()
 	notificationRepository := adapters.NewNotificationMongoBD()
 	notificationService := service.NewNotificationService(logger, notificationRepository)
@@ -29,7 +22,7 @@ func main() {
 func Worker(
 	queue ports.Queue,
 	notificationService *service.NotificationService,
-	logger *slog.Logger,
+	logger lSdk.Logger,
 ) {
 	jobs := []struct {
 		name string
@@ -45,12 +38,7 @@ func Worker(
 					return err
 				}
 				if err := notificationService.NotifyPaymentOrder(input); err != nil {
-					logger.Error(
-						"error to send notification",
-						slog.Any("data", map[string]any{
-							"err": err,
-						}),
-					)
+					logger.Error("error to send notification", err)
 					return err
 				}
 				return nil

@@ -4,10 +4,11 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"log/slog"
 	"pdi/order/internal/core/domain"
 	"pdi/order/internal/core/exceptions"
 	"pdi/order/internal/ports"
+
+	lSdk "github.com/julianojj/essentials-sdk-go/pkg/logger"
 )
 
 type (
@@ -16,7 +17,7 @@ type (
 		itemRepository  ports.ItemRepository
 		queue           ports.Queue
 		userGateway     ports.UserGateway
-		logger          *slog.Logger
+		logger          lSdk.Logger
 	}
 	OrderServiceInput struct {
 		UserID       string                   `json:"user_id"`
@@ -34,7 +35,7 @@ func NewOrderService(
 	itemRepository ports.ItemRepository,
 	queue ports.Queue,
 	userGateway ports.UserGateway,
-	logger *slog.Logger,
+	logger lSdk.Logger,
 ) *OrderService {
 	return &OrderService{
 		orderRepository,
@@ -97,11 +98,10 @@ func (os *OrderService) MakeOrder(input *OrderServiceInput) (map[string]any, err
 	}
 	os.logger.Info(
 		"make order",
-		slog.Any("data", map[string]any{
+		map[string]any{
 			"order_id":    order.ID,
 			"customer_id": existingUser["id"],
-		}),
-		slog.String("path", "service.order_service.go"),
+		},
 	)
 	return map[string]any{
 		"order_id":   order.ID,
@@ -130,14 +130,13 @@ func (os *OrderService) UpdateStatusOrder(input map[string]any) error {
 	}
 	os.logger.Info(
 		"update status order",
-		slog.Any("data", map[string]any{
+		map[string]any{
 			"payment_id":     paymenID,
 			"order_id":       existingOrder.ID,
 			"payment_status": paymentStatus,
 			"order_status":   existingOrder.Status,
 			"total":          existingOrder.Total,
-		}),
-		slog.String("path", "service.order_service.UpdateStatusOrder"),
+		},
 	)
 	return nil
 }
