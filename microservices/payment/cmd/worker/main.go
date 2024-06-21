@@ -4,26 +4,26 @@ import (
 	"encoding/json"
 	"pdi/payment/internal/adapters"
 	"pdi/payment/internal/core/service"
-	"pdi/payment/internal/ports"
 
 	lSdk "github.com/julianojj/essentials-sdk-go/pkg/logger"
+	qSdk "github.com/julianojj/essentials-sdk-go/pkg/queue"
 )
 
 func main() {
-	sqs := adapters.NewSQS()
+	queue := qSdk.NewSQS("http://localstack:4566", "us-east-1")
 	paymentGateway := adapters.NewPagarme()
 	paymentRepository := adapters.NewPaymentRepositoryDynamoDB()
 
 	logger := lSdk.NewSlog()
 
-	paymentService := service.NewPaymentService(paymentGateway, paymentRepository, sqs, logger)
-	Worker(sqs, paymentService, logger)
+	paymentService := service.NewPaymentService(paymentGateway, paymentRepository, queue, logger)
+	Worker(queue, paymentService, logger)
 	forever := make(chan bool)
 	<-forever
 }
 
 func Worker(
-	queue ports.Queue,
+	queue qSdk.Queue,
 	paymentService *service.PaymentService,
 	logger lSdk.Logger,
 ) {

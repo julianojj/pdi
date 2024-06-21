@@ -4,15 +4,15 @@ import (
 	"encoding/json"
 	"pdi/order/internal/adapters"
 	"pdi/order/internal/core/service"
-	"pdi/order/internal/ports"
 
 	lSdk "github.com/julianojj/essentials-sdk-go/pkg/logger"
+	qSdk "github.com/julianojj/essentials-sdk-go/pkg/queue"
 )
 
 func main() {
 	orderRepository := adapters.NewOrderRepositoryDynamoDB()
 	itemRepository := adapters.NewItemRepositoryMemory()
-	sqs := adapters.NewSQS()
+	sqs := qSdk.NewSQS("http://localstack:4566", "us-east-1")
 	userGateway := adapters.NewUserGatewayAPI()
 	logger := lSdk.NewSlog()
 
@@ -24,7 +24,7 @@ func main() {
 }
 
 func Worker(
-	queue ports.Queue,
+	queue qSdk.Queue,
 	orderService *service.OrderService,
 	logger lSdk.Logger,
 ) {

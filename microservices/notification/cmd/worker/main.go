@@ -4,23 +4,23 @@ import (
 	"encoding/json"
 
 	lSdk "github.com/julianojj/essentials-sdk-go/pkg/logger"
+	qSdk "github.com/julianojj/essentials-sdk-go/pkg/queue"
 	"github.com/julianojj/pdi/notification/internal/adapters"
 	"github.com/julianojj/pdi/notification/internal/core/service"
-	"github.com/julianojj/pdi/notification/internal/ports"
 )
 
 func main() {
 	logger := lSdk.NewSlog()
-	sqs := adapters.NewSQS()
+	queue := qSdk.NewSQS("http://localstack:4566", "us-east-1")
 	notificationRepository := adapters.NewNotificationMongoBD()
 	notificationService := service.NewNotificationService(logger, notificationRepository)
-	Worker(sqs, notificationService, logger)
+	Worker(queue, notificationService, logger)
 	forever := make(chan bool)
 	<-forever
 }
 
 func Worker(
-	queue ports.Queue,
+	queue qSdk.Queue,
 	notificationService *service.NotificationService,
 	logger lSdk.Logger,
 ) {

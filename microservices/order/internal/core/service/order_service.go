@@ -9,13 +9,14 @@ import (
 	"pdi/order/internal/ports"
 
 	lSdk "github.com/julianojj/essentials-sdk-go/pkg/logger"
+	qSdk "github.com/julianojj/essentials-sdk-go/pkg/queue"
 )
 
 type (
 	OrderService struct {
 		orderRepository ports.OrderRepository
 		itemRepository  ports.ItemRepository
-		queue           ports.Queue
+		queue           qSdk.Queue
 		userGateway     ports.UserGateway
 		logger          lSdk.Logger
 	}
@@ -33,7 +34,7 @@ type (
 func NewOrderService(
 	orderRepository ports.OrderRepository,
 	itemRepository ports.ItemRepository,
-	queue ports.Queue,
+	queue qSdk.Queue,
 	userGateway ports.UserGateway,
 	logger lSdk.Logger,
 ) *OrderService {
@@ -92,7 +93,8 @@ func (os *OrderService) MakeOrder(input *OrderServiceInput) (map[string]any, err
 	if err != nil {
 		return nil, err
 	}
-	if err := os.queue.Publish(string(b)); err != nil {
+	queueURL := "https://localhost.localstack.cloud:4566/000000000000/maked-order"
+	if err := os.queue.Publish(queueURL, string(b)); err != nil {
 		fmt.Println(err)
 		return nil, err
 	}
